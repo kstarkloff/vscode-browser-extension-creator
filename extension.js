@@ -25,10 +25,28 @@ async function createChromeExtensionFiles() {
 	}
 
 	const filesToCreate = [
-		{ name: 'pacakge.json', content: `{
+		{ name: 'manifest.json', content: `{
+	"manifest_version": 3,
+	"name": "My extension",
+	"version": "1.0",
+	"permissions": [
+	],
+	"action": {
+			"default_popup": "popup.html"
+	}
 }`},
-		{ name: '', content: ``},
-		{ name: '', content: ``}
+		{ name: 'popup.html', content: `<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>My extension</title>
+	</head>
+	<body>
+
+	<script src="popup.js"></script>
+	</body>
+</html>`},
+		{ name: 'popup.js', content: ``}
 	];
 
 	filesToCreate.forEach(file => {
@@ -41,7 +59,7 @@ async function createChromeExtensionFiles() {
 		});
 	});
 
-	vscode.window.showInformationMessage('Files for Chrome extension created.');
+	vscode.window.showInformationMessage('Files for Chrome extension created at ' + folderPath);
 }
 
 // This method is called when your extension is deactivated
