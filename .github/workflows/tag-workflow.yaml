@@ -1,0 +1,31 @@
+name: Package extension
+
+on:
+  push:
+
+jobs:
+  package:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Get version from package.json
+        run: |
+          BEC_VERSION=$(jq -r '.version' package.json)
+          echo "BEC_VERSION=${BEC_VERSION}" >> $GITHUB_ENV
+
+      - name: Setup NodeJS
+        uses: actions/setup-node@v4
+        with:
+          node-version: 'latest'
+      
+      - name: Install packages
+        run: |
+          npm install
+
+      - name: Package extension
+        run: |
+          npm install -g vsce
+          vsce package
