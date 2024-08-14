@@ -27,5 +27,5 @@ jobs:
 
       - name: Package extension
         run: |
-          npm install -g vsce
+          npm install -g @vscode/vsce
           vsce package
