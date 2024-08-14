@@ -15,7 +15,7 @@
     "commands": [
       {
         "command": "browser-extension-creator.chrome",
-        "title": "Create Chrome extension"
+        "title": "Create Chrome extension files"
       }
     ],
     "menus": {
@@ -23,7 +23,7 @@
         {
           "command": "browser-extension-creator.chrome",
           "when": "!editorHasSelection",
-          "group": "navigation"
+          "group": "3_contributed"
         }
       ]
     }
@@ -39,7 +39,6 @@
     "@types/vscode": "^1.92.0",
     "@vscode/test-cli": "^0.0.9",
     "@vscode/test-electron": "^2.4.0",
-    "eslint": "^8.57.0",
     "typescript": "^5.4.5"
   },
   "dependencies": {
