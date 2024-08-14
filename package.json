@@ -3,6 +3,7 @@
   "displayName": "Browser Extension Creator",
   "description": "This extension creates a template for an extension of a browser of your choice.",
   "version": "0.0.1",
+  "publisher": "StarkesWeb",
   "engines": {
     "vscode": "^1.92.0"
   },
