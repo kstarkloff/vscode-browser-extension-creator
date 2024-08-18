@@ -17,12 +17,22 @@
       {
         "command": "browser-extension-creator.chrome",
         "title": "Create Chrome extension files"
+      },
+
+      {
+        "command": "browser-extension-creator.firefox",
+        "title": "Create Firefox extension files"
       }
     ],
     "menus": {
       "explorer/context": [
         {
           "command": "browser-extension-creator.chrome",
+          "when": "!editorHasSelection",
+          "group": "3_contributed"
+        },
+        {
+          "command": "browser-extension-creator.firefox",
           "when": "!editorHasSelection",
           "group": "3_contributed"
         }

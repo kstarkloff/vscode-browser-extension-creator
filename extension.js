@@ -12,18 +12,14 @@ const { PNG } = require('pngjs');
  * @param {vscode.ExtensionContext} context
  */
 function activate(context) {
-	let disposable = vscode.commands.registerCommand('browser-extension-creator.chrome', createChromeExtensionFiles);
+	context.subscriptions.push(
+		vscode.commands.registerCommand('browser-extension-creator.chrome', createChromeExtensionFiles));
 
-	context.subscriptions.push(disposable);
+	context.subscriptions.push(
+		vscode.commands.registerCommand('browser-extension-creator.firefox', createFirefoxExtensionFiles));
 }
 
 async function createChromeExtensionFiles() {
-	const folderPath = vscode.workspace.workspaceFolders[0].uri.fsPath;
-
-	if (!folderPath) {
-		vscode.window.showErrorMessage("No workspace found.");
-		return;
-	}
 
 	const filesToCreate = [
 		{ name: 'manifest.json', content: `{
@@ -56,33 +52,57 @@ async function createChromeExtensionFiles() {
 		{ name: 'popup.js', content: ``}
 	];
 
-	filesToCreate.forEach(file => {
-		const filePath = path.join(folderPath, file.name);
+	try {
+		createFiles(filesToCreate);
 
-		fs.writeFile(filePath, file.content, (err) => {
-			if (err) {
-				vscode.window.showErrorMessage("Error creating file ${file.name}: ${err.message}");
-			}
-		});
-	});
+		createImage(16);
+		createImage(48);
+		createImage(128);
 
-	// create images subdirectory
-	const imagesPath = path.join(folderPath, "images");
-
-	if (!fs.existsSync(imagesPath)) {
-		fs.mkdirSync(imagesPath);
+		vscode.window.showInformationMessage('Files for Chrome extension created.');
+	} catch (err) {
+		vscode.window.showErrorMessage("An error occurred with error message '" + err + "'");
 	}
+}
 
-	// create png pictures
-	const png16 = new PNG({width: 16, height: 16});
-	const png48 = new PNG({width: 48, height: 48});
-	const png128 = new PNG({width: 128, height: 128});
+async function createFirefoxExtensionFiles() {
+	const filesToCreate = [
+		{ name: 'manifest.json', content: `{
+  "manifest_version": 2,
+  "name": "Mein erstes Add-on",
+  "version": "1.0",
+  "description": "Ein einfaches Firefox-Add-on",
+  "icons": {
+    "48": "images/icon48.png"
+  },
+  "browser_action": {
+    "default_popup": "popup.html",
+    "default_icon": "images/icon48.png"
+  },
+  "background": {
+    "scripts": ["background.js"]
+  },
+  "permissions": [
+    "storage",
+    "activeTab"
+  ]
+}`}, 
+			{ name: 'popup.html', content: `
 
-	createPngWithColor(png16, path.join(imagesPath, 'icon16.png'), 255, 0, 0, 255);
-	createPngWithColor(png48, path.join(imagesPath, 'icon48.png'), 255, 0, 0, 255);
-	createPngWithColor(png128, path.join(imagesPath, 'icon128.png'), 255, 0, 0, 255);
+`},
+			{ name: 'popup.js', content: ``},
+			{ name: 'background.js', content: ``}
+	];
 
-	vscode.window.showInformationMessage('Files for Chrome extension created at ' + folderPath);
+	try {
+		createFiles(filesToCreate);
+
+		createImage(48);
+
+		vscode.window.showInformationMessage("Files for Firefox extension created.");
+	} catch (err) {
+		vscode.window.showErrorMessage("An error occurred with error message '" + err + "'");
+	}
 }
 
 function createPngWithColor(png, image_path, red, green, blue, alpha) {
@@ -99,6 +119,46 @@ function createPngWithColor(png, image_path, red, green, blue, alpha) {
 
 	png.pack().pipe(fs.createWriteStream(image_path))
 		.on('finish', () => {});
+}
+
+async function createFiles(filesToCreate) {
+	const folderPath = vscode.workspace.workspaceFolders[0].uri.fsPath;
+
+	if (!folderPath) {
+		throw "No workspace found.";
+	}
+
+	filesToCreate.forEach(file => {
+		const filePath = path.join(folderPath, file.name);
+
+		fs.writeFile(filePath, file.content, (err) => {
+			if (err) {
+				throw "Error creating file ${file.name}: ${err.message}.";
+			}
+		})
+	});
+}
+
+async function createImage(size) {
+	if (typeof size !== 'number') {
+		throw "Cannot create picture. Given size was not a number.";
+	}
+
+	const folderPath = vscode.workspace.workspaceFolders[0].uri.fsPath;
+
+	if (!folderPath) {
+		throw "No workspace found.";
+	}
+
+	const imagesPath = path.join(folderPath, "images");
+
+	if (!fs.existsSync(imagesPath)) {
+		fs.mkdirSync(imagesPath);
+	}
+
+	const png = new PNG({width: size, height: size});
+
+	createPngWithColor(png, path.join(imagesPath, "icon" + size + ".png"), 255, 0, 0, 255);
 }
 
 // This method is called when your extension is deactivated
